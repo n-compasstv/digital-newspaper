@@ -1,0 +1,11 @@
+<img
+    *ngIf="properties"
+    class="dynamic-image position-absolute"
+    [src]="properties.imageUrl"
+    [ngStyle]="{
+        left: properties.x / 19.2 + 'vw',
+        top: properties.y / 10.8 + 'vh',
+        width: properties.width ? properties.width / 19.2 + 'vw' : 'auto',
+        height: properties.height ? properties.height / 10.8 + 'vh' : 'auto',
+        'z-index': properties.zIndex
+    }" />

@@ -1,0 +1,12 @@
+<span
+    *ngIf="properties"
+    class="dynamic-text position-absolute"
+    [ngStyle]="{
+        color: properties.color,
+        'font-size': properties.fontSize / 19.2 + 'vw',
+        'font-family': properties.fontFamily,
+        'left.%': (properties.x / 1920) * 100,
+        'top.%': (properties.y / 1080) * 100,
+        'z-index': properties.zIndex
+    }"
+    [innerHTML]="processText(properties.text)"></span>
