@@ -1,1 +1,1 @@
-export * from './dynamic-component.interface';
+export * from './DynamicComponent.interface';

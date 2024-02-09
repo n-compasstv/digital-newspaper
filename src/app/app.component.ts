@@ -2,18 +2,26 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { DynamicContainerComponent, DynamicTextComponent, DynamicImageComponent } from '@components';
-import { DynamicContainer } from '@shared/classes/DynamicContainer';
-import { DynamicImage } from '@shared/classes/DynamicImage';
-import { DynamicText } from '@shared/classes/DynamicText';
+import { DynamicContainer, DynamicImage, DynamicText } from '@shared/classes/';
 import { COMPONENT_TYPE_OPTIONS } from '@shared/constants';
 import { DynamicComponent } from '@shared/interfaces';
+import { NewsService } from '@shared/services/news.service';
 
 const ngComponents = [DynamicContainerComponent, DynamicTextComponent, DynamicImageComponent];
-const DUMMY: any[] = [
+const BASE_TEMPLATE: any[] = [
     {
         componentId: 'dynamic-container',
         background: '#1c2731',
         height: 125,
+        width: 1920,
+        x: 0,
+        y: 0,
+        zIndex: 3,
+    },
+    {
+        componentId: 'dynamic-container',
+        background: 'rgba(0,0,0, 0.2)',
+        height: 1080,
         width: 1920,
         x: 0,
         y: 0,
@@ -26,61 +34,97 @@ const DUMMY: any[] = [
         width: 80,
         x: 40,
         y: 750,
-        zIndex: 3,
+        zIndex: 4,
     },
     {
         componentId: 'dynamic-container',
         background: '#1c2731',
-        height: 400,
+        backgroundFade: 'top',
+        height: 800,
         width: 1920,
         x: 0,
-        y: 680,
-        zIndex: 2,
+        y: 280,
+        zIndex: 3,
     },
     {
         componentId: 'dynamic-text',
         color: '#FFFFFF',
-        fontSize: 60,
-        fontFamily: 'Arial Black',
-        text: 'NCompassTV News',
+        fontSize: 70,
+        fontFamily: "'Nunito', sans-serif",
+        fontWeight: 600,
+        text: 'N',
         x: 20,
-        y: 15,
-        zIndex: 2,
-    },
-    {
-        componentId: 'dynamic-text',
-        color: '#FFFFFF',
-        fontSize: 60,
-        fontFamily: 'Arial Black',
-        text: 'Headline',
-        x: 40,
-        y: 760,
-        zIndex: 2,
+        y: 10,
+        zIndex: 3,
     },
     {
         componentId: 'dynamic-text',
         color: '#FFFFFF',
         fontSize: 40,
-        fontFamily: 'Arial Black',
+        fontFamily: "'Nunito', sans-serif",
+        fontWeight: 600,
+        text: 'EWS',
+        x: 70,
+        y: 45,
+        zIndex: 3,
+    },
+    {
+        componentId: 'dynamic-text',
+        color: 'yellow',
+        fontSize: 20,
+        fontFamily: "'Nunito', sans-serif",
+        fontWeight: 600,
+        text: 'Mount Vernon',
+        x: 72,
+        y: 30,
+        zIndex: 3,
+    },
+    {
+        componentId: 'dynamic-text',
+        color: '#FFFFFF',
+        fontSize: 60,
+        fontFamily: "'Nunito', sans-serif",
+        fontWeight: 600,
+        text: 'Headline',
+        x: 40,
+        y: 760,
+        zIndex: 3,
+    },
+    {
+        componentId: 'dynamic-text',
+        color: '#FFFFFF',
+        fontSize: 40,
+        fontFamily: "'Nunito', sans-serif",
         text: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusantium eum et \n inventore aspernatur vero dolorem.',
         x: 40,
         y: 860,
-        zIndex: 2,
+        zIndex: 3,
+    },
+    {
+        componentId: 'dynamic-text',
+        color: '#FFFFFF',
+        fontSize: 25,
+        fontFamily: "'Nunito', sans-serif",
+        text: 'Provided by',
+        x: 1380,
+        y: 47,
+        zIndex: 3,
     },
     {
         componentId: 'dynamic-text',
         color: '#FFEE44',
-        fontSize: 40,
-        fontFamily: 'Arial Black',
-        text: 'Latest News',
-        x: 1620,
-        y: 30,
-        zIndex: 2,
+        fontSize: 35,
+        fontFamily: "'Nunito', sans-serif",
+        text: 'MountVernonNews.com',
+        x: 1520,
+        y: 40,
+        zIndex: 3,
     },
     {
         componentId: 'dynamic-image',
         imageUrl:
-            'https://images.pexels.com/photos/3970330/pexels-photo-3970330.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+            'https://images.pexels.com/photos/439818/pexels-photo-439818.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+        fit: 'cover',
         height: 1080,
         width: 1920,
         x: 0,
@@ -102,12 +146,23 @@ export class AppComponent {
     texts: DynamicText[] = [];
     componentTypes = COMPONENT_TYPE_OPTIONS;
 
+    constructor(private _newService: NewsService) {}
+
     ngOnInit() {
+        this.getNews();
         this.initializeDynamicComponents();
     }
 
+    private getNews() {
+        this._newService.getLocalLabNews().subscribe({
+            next: (data) => {
+                console.log(data);
+            },
+        });
+    }
+
     private initializeDynamicComponents() {
-        for (let component of DUMMY) this.checkComponentProperties(component);
+        for (let component of BASE_TEMPLATE) this.checkComponentProperties(component);
     }
 
     private checkComponentProperties(component: DynamicComponent) {
@@ -130,6 +185,7 @@ export class AppComponent {
         return new DynamicContainer({
             componentId: component.componentId,
             background: component.background || '',
+            backgroundFade: component.backgroundFade || 'none',
             height: component.height || 0,
             width: component.width || 0,
             x: component.x,
@@ -142,6 +198,7 @@ export class AppComponent {
         return new DynamicImage({
             componentId: component.componentId,
             imageUrl: component.imageUrl || '',
+            fit: component.fit || 'contain',
             height: component.height || 0,
             width: component.width || 0,
             x: component.x,
@@ -156,6 +213,7 @@ export class AppComponent {
             color: component.color || '',
             fontFamily: component.fontFamily || '',
             fontSize: component.fontSize || 0,
+            fontWeight: component.fontWeight || 400,
             text: component.text || '',
             x: component.x,
             y: component.y,
