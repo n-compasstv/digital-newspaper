@@ -5,6 +5,7 @@ export class DynamicImage extends BaseComponent {
     fit: 'cover' | 'contain';
     height: number;
     width: number;
+    isFeaturedImage?: boolean;
 
     constructor(prop: {
         componentId: string;
@@ -15,11 +16,13 @@ export class DynamicImage extends BaseComponent {
         x: number;
         y: number;
         zIndex: number;
+        isFeaturedImage?: boolean;
     }) {
         super({ componentId: prop.componentId, x: prop.x, y: prop.y, zIndex: prop.zIndex });
         this.imageUrl = prop.imageUrl;
         this.fit = prop.fit;
         this.height = prop.height;
         this.width = prop.width;
+        this.isFeaturedImage = prop.isFeaturedImage;
     }
 }

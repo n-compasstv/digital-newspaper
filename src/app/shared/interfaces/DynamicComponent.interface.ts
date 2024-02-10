@@ -27,4 +27,23 @@ export interface DynamicComponent {
     imageUrl?: string;
     text?: string;
     width?: number;
+    // Teaser and Headline Properties
+    isFeaturedImage?: boolean;
+    headlineColor?: string;
+    headlineFontFamily?: string;
+    headlineFontWeight?: number;
+    headlineMarginBottom?: number;
+    headlineSize?: number;
+    headlineText?: string;
+    headlineBar: boolean;
+    headlineBarColor: string;
+    paddingX?: number;
+    paddingY?: number;
+    teaserColor?: string;
+    teaserFontFamily?: string;
+    teaserFontWeight?: number;
+    teaserMarginBottom?: number;
+    teaserSize?: number;
+    teaserText?: string;
+    verticalPosition?: 'start' | 'center' | 'end';
 }

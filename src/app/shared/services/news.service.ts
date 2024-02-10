@@ -11,10 +11,7 @@ export class NewsService {
     constructor(private _http: HttpClient) {}
 
     getLocalLabNews() {
-        const URL = 'https://pipeline-api.locallabs.com/api/v1/stories?by_community=2887&limit=3';
-        const headers = new HttpHeaders({
-            Authorization: 'J18-j9F_qnj8urgoF8ZV',
-        });
-        return this._http.get(URL, { headers: headers });
+        const URL = 'https://api-development.n-compass.online:4203/api/placer/news?community=2887&limit=5';
+        return this._http.get<any>(URL);
     }
 }

@@ -1,13 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { DynamicContainerComponent, DynamicTextComponent, DynamicImageComponent } from '@components';
-import { DynamicContainer, DynamicImage, DynamicText } from '@shared/classes/';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
+import {
+    DynamicContainerComponent,
+    DynamicTextComponent,
+    DynamicImageComponent,
+    HeadlineTeaserComponent,
+} from '@components';
 import { COMPONENT_TYPE_OPTIONS } from '@shared/constants';
-import { DynamicComponent } from '@shared/interfaces';
-import { NewsService } from '@shared/services/news.service';
+import { DynamicComponent, LocalLabs } from '@shared/interfaces';
+import { DynamicContainer, DynamicImage, DynamicText, HeadlineTeaser } from '@shared/classes/';
+import { NewsService } from '@shared/services';
 
-const ngComponents = [DynamicContainerComponent, DynamicTextComponent, DynamicImageComponent];
+const ngComponents = [DynamicContainerComponent, DynamicTextComponent, DynamicImageComponent, HeadlineTeaserComponent];
 const BASE_TEMPLATE: any[] = [
     {
         componentId: 'dynamic-container',
@@ -26,15 +31,6 @@ const BASE_TEMPLATE: any[] = [
         x: 0,
         y: 0,
         zIndex: 2,
-    },
-    {
-        componentId: 'dynamic-container',
-        background: '#FFEE44',
-        height: 10,
-        width: 80,
-        x: 40,
-        y: 750,
-        zIndex: 4,
     },
     {
         componentId: 'dynamic-container',
@@ -80,24 +76,38 @@ const BASE_TEMPLATE: any[] = [
         zIndex: 3,
     },
     {
-        componentId: 'dynamic-text',
         color: '#FFFFFF',
-        fontSize: 60,
+        componentId: 'dynamic-text',
         fontFamily: "'Nunito', sans-serif",
+        fontSize: 60,
         fontWeight: 600,
-        text: 'Headline',
+        isHeadline: 1,
+        text: '',
         x: 40,
         y: 760,
         zIndex: 3,
     },
     {
-        componentId: 'dynamic-text',
-        color: '#FFFFFF',
-        fontSize: 40,
-        fontFamily: "'Nunito', sans-serif",
-        text: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Accusantium eum et \n inventore aspernatur vero dolorem.',
-        x: 40,
-        y: 860,
+        componentId: 'headline-teaser',
+        headlineText: '',
+        teaserText: '',
+        headlineColor: '#FFEE00',
+        headlineFontFamily: "'Nunito', sans-serif",
+        headlineFontWeight: 600,
+        headlineMarginBottom: 10,
+        headlineSize: 55,
+        headlineBar: true,
+        headlineBarColor: '#FFEE00',
+        paddingX: 50,
+        paddingY: 20,
+        teaserColor: '#FFFFFF',
+        teaserFontFamily: "'Nunito', sans-serif",
+        teaserFontWeight: 500,
+        teaserMarginBottom: 0,
+        teaserSize: 40,
+        verticalPosition: 'bottom',
+        x: 0,
+        y: 0,
         zIndex: 3,
     },
     {
@@ -122,10 +132,10 @@ const BASE_TEMPLATE: any[] = [
     },
     {
         componentId: 'dynamic-image',
-        imageUrl:
-            'https://images.pexels.com/photos/439818/pexels-photo-439818.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
         fit: 'cover',
         height: 1080,
+        imageUrl: '',
+        isFeaturedImage: true,
         width: 1920,
         x: 0,
         y: 0,
@@ -143,20 +153,31 @@ export class AppComponent {
     title = 'digital-newspaper';
     containers: DynamicContainer[] = [];
     images: DynamicImage[] = [];
+    indexValue = 0;
+    news: HeadlineTeaser[] = [];
     texts: DynamicText[] = [];
+    localLabNews!: LocalLabs;
     componentTypes = COMPONENT_TYPE_OPTIONS;
 
-    constructor(private _newService: NewsService) {}
+    constructor(
+        private _routeParam: ActivatedRoute,
+        private _newService: NewsService,
+    ) {}
 
     ngOnInit() {
-        this.getNews();
-        this.initializeDynamicComponents();
+        this._routeParam.queryParams.subscribe({
+            next: (data: any) => {
+                this.indexValue = data.index;
+                if (this.indexValue) this.getNews();
+            },
+        });
     }
 
     private getNews() {
         this._newService.getLocalLabNews().subscribe({
-            next: (data) => {
-                console.log(data);
+            next: (data: LocalLabs[]) => {
+                this.localLabNews = data[this.indexValue];
+                this.initializeDynamicComponents();
             },
         });
     }
@@ -175,6 +196,9 @@ export class AppComponent {
                 break;
             case COMPONENT_TYPE_OPTIONS.text:
                 this.texts.push(this.createDynamicText(component));
+                break;
+            case COMPONENT_TYPE_OPTIONS.headline_teaser:
+                this.news.push(this.createHeadlineTeaser(component));
                 break;
             default:
                 break;
@@ -197,7 +221,7 @@ export class AppComponent {
     private createDynamicImage(component: DynamicComponent) {
         return new DynamicImage({
             componentId: component.componentId,
-            imageUrl: component.imageUrl || '',
+            imageUrl: component.isFeaturedImage ? this.localLabNews.images[0] : component.imageUrl || '',
             fit: component.fit || 'contain',
             height: component.height || 0,
             width: component.width || 0,
@@ -215,6 +239,32 @@ export class AppComponent {
             fontSize: component.fontSize || 0,
             fontWeight: component.fontWeight || 400,
             text: component.text || '',
+            x: component.x,
+            y: component.y,
+            zIndex: component.zIndex,
+        });
+    }
+
+    private createHeadlineTeaser(component: DynamicComponent) {
+        return new HeadlineTeaser({
+            componentId: component.componentId,
+            headlineColor: component.headlineColor || '#00000',
+            headlineFontFamily: component.headlineFontFamily || '',
+            headlineFontWeight: component.headlineFontWeight || 400,
+            headlineMarginBottom: component.headlineMarginBottom || 20,
+            headlineSize: component.headlineSize || 30,
+            headlineText: this.localLabNews.headline ? this.localLabNews.headline : component.headlineText || '',
+            headlineBar: component.headlineBar || false,
+            headlineBarColor: component.headlineBarColor || '',
+            paddingX: component.paddingX || 0,
+            paddingY: component.paddingY || 0,
+            teaserColor: component.teaserColor || '#000000',
+            teaserFontFamily: component.teaserFontFamily || 'Arial',
+            teaserFontWeight: component.teaserFontWeight || 400,
+            teaserMarginBottom: component.teaserMarginBottom || 0,
+            teaserSize: component.teaserSize || 30,
+            teaserText: this.localLabNews.teaser ? this.localLabNews.teaser : component.teaserText || '',
+            verticalPosition: component.verticalPosition || 'end',
             x: component.x,
             y: component.y,
             zIndex: component.zIndex,
