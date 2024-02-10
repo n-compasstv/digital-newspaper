@@ -4,6 +4,7 @@ export class DynamicText extends BaseComponent {
     color: string;
     fontFamily: string;
     fontSize: number;
+    fontWeight: number;
     text: string;
 
     constructor(prop: {
@@ -11,6 +12,7 @@ export class DynamicText extends BaseComponent {
         componentId: string;
         fontFamily: string;
         fontSize: number;
+        fontWeight: number;
         text: string;
         x: number;
         y: number;
@@ -20,6 +22,7 @@ export class DynamicText extends BaseComponent {
         this.color = prop.color;
         this.fontFamily = prop.fontFamily;
         this.fontSize = prop.fontSize;
+        this.fontWeight = prop.fontWeight;
         this.text = prop.text;
     }
 }

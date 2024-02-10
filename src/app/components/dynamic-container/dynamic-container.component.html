@@ -2,7 +2,16 @@
     *ngIf="properties"
     class="dynamic-container position-absolute"
     [ngStyle]="{
-        background: properties.background,
+        background:
+            properties.backgroundFade !== 'none'
+                ? 'linear-gradient(to ' +
+                  properties.backgroundFade +
+                  ', rgba(' +
+                  properties.background +
+                  ', 1), rgba(' +
+                  properties.background +
+                  ', 0))'
+                : properties.background,
         'width.%': (properties.width / 1920) * 100,
         'height.%': (properties.height / 1080) * 100,
         'left.%': (properties.x / 1920) * 100,

@@ -1,0 +1,53 @@
+<div
+    class="headline-teaser position-absolute"
+    *ngIf="properties"
+    [ngStyle]="{
+        'left.%': (properties.x / 1920) * 100,
+        top: !properties.verticalPosition ? (properties.y / 1080) * 100 + '%' : 'auto',
+        bottom: properties.verticalPosition ? 0 : 'auto',
+        'padding-left.%': (properties.paddingX / 1920) * 100,
+        'padding-right.%': (properties.paddingX / 1920) * 100,
+        'padding-top.%': (properties.paddingY / 1080) * 100,
+        'padding-bottom.%': (properties.paddingY / 1080) * 100,
+        'z-index': properties.zIndex
+    }">
+    <ng-container *ngIf="properties.headlineBar">
+        <div
+            class="headline-bar"
+            [ngStyle]="{
+                background: properties.headlineBarColor
+            }"></div>
+    </ng-container>
+
+    <!-- Headline Content -->
+    <ng-container *ngIf="properties.headlineText">
+        <div class="headline-wrapper" [ngStyle]="{ 'margin-bottom.%': (properties.headlineMarginBottom / 1080) * 100 }">
+            <span
+                class="standard-line-height text-shadow"
+                [ngStyle]="{
+                    color: properties.headlineColor,
+                    'font-family': properties.headlineFontFamily,
+                    'font-size': properties.headlineSize / 19.2 + 'vw',
+                    'font-weight': properties.headlineFontWeight
+                }"
+                [innerHTML]="processText(properties.headlineText)"></span>
+        </div>
+    </ng-container>
+    <!-- Headline Content -->
+
+    <!-- Teaser Content -->
+    <ng-container *ngIf="properties.teaserText">
+        <div class="teaser-wrapper" [ngStyle]="{ 'margin-bottom.%': (properties.teaserMarginBottom / 1080) * 100 }">
+            <span
+                class="standard-line-height text-shadow"
+                [ngStyle]="{
+                    color: properties.teaserColor,
+                    'font-family': properties.teaserFontFamily,
+                    'font-size': properties.teaserSize / 19.2 + 'vw',
+                    'font-weight': properties.teaserFontWeight
+                }"
+                [innerHTML]="processText(properties.teaserText)"></span>
+        </div>
+    </ng-container>
+    <!-- Teaser Content -->
+</div>

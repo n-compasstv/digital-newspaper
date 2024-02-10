@@ -1,1 +1,2 @@
-export * from './dynamic-component.interface';
+export * from './DynamicComponent.interface';
+export * from './LocalLabs.interface';

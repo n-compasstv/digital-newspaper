@@ -4,6 +4,8 @@
     [src]="properties.imageUrl"
     [ngStyle]="{
         left: properties.x / 19.2 + 'vw',
+        'object-fit': properties.fit,
+        'object-position': 'center',
         top: properties.y / 10.8 + 'vh',
         width: properties.width ? properties.width / 19.2 + 'vw' : 'auto',
         height: properties.height ? properties.height / 10.8 + 'vh' : 'auto',

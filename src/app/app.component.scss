@@ -6,3 +6,11 @@
     top: 0;
     width: 100%;
 }
+
+.headline-teaser {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 20px;
+    z-index: 3;
+}

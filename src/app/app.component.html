@@ -2,7 +2,7 @@
     <ng-container *ngIf="containers.length">
         <!-- Dynamic Container -->
         <ng-container *ngFor="let container of containers">
-            <app-dynamic-container [properties]="container"> </app-dynamic-container>
+            <app-dynamic-container [properties]="container"></app-dynamic-container>
         </ng-container>
         <!-- Dynamic Container -->
     </ng-container>
@@ -10,7 +10,7 @@
     <ng-container *ngIf="images.length">
         <!-- Dynamic Image -->
         <ng-container *ngFor="let image of images">
-            <app-dynamic-image [properties]="image"> </app-dynamic-image>
+            <app-dynamic-image [properties]="image"></app-dynamic-image>
         </ng-container>
         <!-- Dynamic Image -->
     </ng-container>
@@ -18,7 +18,15 @@
     <ng-container *ngIf="texts.length">
         <!-- Dynamic Text -->
         <ng-container *ngFor="let text of texts">
-            <app-dynamic-text [properties]="text"> </app-dynamic-text>
+            <app-dynamic-text [properties]="text"></app-dynamic-text>
+        </ng-container>
+        <!-- Dynamic Text -->
+    </ng-container>
+
+    <ng-container *ngIf="news.length">
+        <!-- Dynamic Text -->
+        <ng-container *ngFor="let n of news">
+            <app-headline-teaser [properties]="n"></app-headline-teaser>
         </ng-container>
         <!-- Dynamic Text -->
     </ng-container>
