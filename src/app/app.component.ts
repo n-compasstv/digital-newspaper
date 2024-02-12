@@ -12,6 +12,138 @@ import { DynamicContainer, DynamicImage, DynamicText, HeadlineTeaser } from '@sh
 import { NewsService } from '@shared/services';
 
 const ngComponents = [DynamicContainerComponent, DynamicTextComponent, DynamicImageComponent, HeadlineTeaserComponent];
+const BASE_TEMPLATE = {
+    newsTemplate: [
+        {
+            componentId: 'dynamic-container',
+            background: '#1c2731',
+            height: 125,
+            width: 1920,
+            x: 0,
+            y: 0,
+            zIndex: 3,
+        },
+        {
+            componentId: 'dynamic-container',
+            background: 'rgba(0,0,0, 0.2)',
+            height: 1080,
+            width: 1920,
+            x: 0,
+            y: 0,
+            zIndex: 2,
+        },
+        {
+            componentId: 'dynamic-container',
+            background: '#1c2731',
+            backgroundFade: 'top',
+            height: 800,
+            width: 1920,
+            x: 0,
+            y: 280,
+            zIndex: 3,
+        },
+        {
+            componentId: 'dynamic-text',
+            color: '#FFFFFF',
+            fontSize: 70,
+            fontFamily: "'Nunito', sans-serif",
+            fontWeight: 600,
+            text: 'N',
+            x: 20,
+            y: 10,
+            zIndex: 3,
+        },
+        {
+            componentId: 'dynamic-text',
+            color: '#FFFFFF',
+            fontSize: 40,
+            fontFamily: "'Nunito', sans-serif",
+            fontWeight: 600,
+            text: 'EWS',
+            x: 70,
+            y: 45,
+            zIndex: 3,
+        },
+        {
+            componentId: 'dynamic-text',
+            color: 'yellow',
+            fontSize: 20,
+            fontFamily: "'Nunito', sans-serif",
+            fontWeight: 600,
+            text: 'Mount Vernon',
+            x: 72,
+            y: 30,
+            zIndex: 3,
+        },
+        {
+            color: '#FFFFFF',
+            componentId: 'dynamic-text',
+            fontFamily: "'Nunito', sans-serif",
+            fontSize: 60,
+            fontWeight: 600,
+            isHeadline: 1,
+            text: '',
+            x: 40,
+            y: 760,
+            zIndex: 3,
+        },
+        {
+            componentId: 'headline-teaser',
+            headlineText: '',
+            teaserText: '',
+            headlineColor: '#FFEE00',
+            headlineFontFamily: "'Nunito', sans-serif",
+            headlineFontWeight: 600,
+            headlineMarginBottom: 10,
+            headlineSize: 55,
+            headlineBar: true,
+            headlineBarColor: '#FFEE00',
+            paddingX: 50,
+            paddingY: 20,
+            teaserColor: '#FFFFFF',
+            teaserFontFamily: "'Nunito', sans-serif",
+            teaserFontWeight: 500,
+            teaserMarginBottom: 0,
+            teaserSize: 40,
+            verticalPosition: 'bottom',
+            x: 0,
+            y: 0,
+            zIndex: 3,
+        },
+        {
+            componentId: 'dynamic-text',
+            color: '#FFFFFF',
+            fontSize: 25,
+            fontFamily: "'Nunito', sans-serif",
+            text: 'Provided by',
+            x: 1380,
+            y: 47,
+            zIndex: 3,
+        },
+        {
+            componentId: 'dynamic-text',
+            color: '#FFEE44',
+            fontSize: 35,
+            fontFamily: "'Nunito', sans-serif",
+            text: 'MountVernonNews.com',
+            x: 1520,
+            y: 40,
+            zIndex: 3,
+        },
+        {
+            componentId: 'dynamic-image',
+            fit: 'cover',
+            height: 1080,
+            imageUrl: '',
+            isFeaturedImage: true,
+            width: 1920,
+            x: 0,
+            y: 0,
+            zIndex: 1,
+        },
+    ],
+    newsItems: [],
+};
 
 @Component({
     selector: 'app-root',
@@ -28,12 +160,22 @@ export class AppComponent {
     texts: DynamicText[] = [];
     newsData!: NewsData;
     newsItems: News[] = [];
+    newsIndex = 0;
     componentTypes = COMPONENT_TYPE_OPTIONS;
 
     constructor(private _newService: NewsService) {}
 
     ngOnInit() {
-        this.getNews();
+        // Get Saved NewsIndex
+        const newsIndex = localStorage.getItem('newsIndex');
+
+        if (!newsIndex) {
+            localStorage.setItem('newsIndex', '0');
+        } else {
+            this.newsIndex = parseInt(newsIndex);
+        }
+
+        this.getLiveLocalLabNews();
     }
 
     private getNews() {
@@ -46,8 +188,28 @@ export class AppComponent {
         });
     }
 
+    /** @description - this is temporary */
+    private getLiveLocalLabNews() {
+        this._newService.getLiveLocalLabNews().subscribe({
+            next: (data: News[]) => {
+                this.newsData = BASE_TEMPLATE;
+                this.newsItems = data;
+                this.initializeDynamicComponents();
+            },
+        });
+    }
+    /** @description - this is temporary */
+
     private initializeDynamicComponents() {
+        if (this.newsIndex >= this.newsItems.length) {
+            this.newsIndex = 0;
+            localStorage.setItem('newsIndex', '0');
+        }
+
         for (let component of this.newsData.newsTemplate) this.checkComponentProperties(component);
+
+        this.newsIndex += 1;
+        localStorage.setItem('newsIndex', this.newsIndex.toString());
     }
 
     private checkComponentProperties(component: DynamicComponent) {
@@ -85,7 +247,9 @@ export class AppComponent {
     private createDynamicImage(component: DynamicComponent) {
         return new DynamicImage({
             componentId: component.componentId,
-            imageUrl: component.isFeaturedImage ? this.newsItems[0].images[0] : component.imageUrl || '',
+            imageUrl: component.isFeaturedImage
+                ? this.newsItems[this.newsIndex || 0].images[0]
+                : component.imageUrl || '',
             fit: component.fit || 'contain',
             height: component.height || 0,
             width: component.width || 0,
@@ -117,7 +281,9 @@ export class AppComponent {
             headlineFontWeight: component.headlineFontWeight || 400,
             headlineMarginBottom: component.headlineMarginBottom || 20,
             headlineSize: component.headlineSize || 30,
-            headlineText: this.newsItems[0].headline ? this.newsItems[0].headline : component.headlineText || '',
+            headlineText: this.newsItems[this.newsIndex || 0].headline
+                ? this.newsItems[this.newsIndex || 0].headline
+                : component.headlineText || '',
             headlineBar: component.headlineBar || false,
             headlineBarColor: component.headlineBarColor || '',
             paddingX: component.paddingX || 0,
@@ -127,7 +293,9 @@ export class AppComponent {
             teaserFontWeight: component.teaserFontWeight || 400,
             teaserMarginBottom: component.teaserMarginBottom || 0,
             teaserSize: component.teaserSize || 30,
-            teaserText: this.newsItems[0].teaser ? this.newsItems[0].teaser : component.teaserText || '',
+            teaserText: this.newsItems[this.newsIndex || 0].teaser
+                ? this.newsItems[this.newsIndex || 0].teaser
+                : component.teaserText || '',
             verticalPosition: component.verticalPosition || 'end',
             x: component.x,
             y: component.y,

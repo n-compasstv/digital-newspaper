@@ -14,4 +14,9 @@ export class NewsService {
     getNewsData() {
         return this._http.get<NewsData>('/assets/data.json');
     }
+
+    getLiveLocalLabNews() {
+        const URL = 'https://api-development.n-compass.online:4203/api/placer/news?community=2887&limit=5';
+        return this._http.get<any>(URL);
+    }
 }
